@@ -1,3 +1,5 @@
+require_relative 'result_printer'
+
 class CollatzSizeCalculator
   def initialize(starting_number)
     @starting_number = starting_number
@@ -11,7 +13,7 @@ class CollatzSizeCalculator
       number = next_number(number)
       break if number == 1
     end
-    size + 1
+    size
   end
 
   private
@@ -32,28 +34,20 @@ class CollatzSizeComparator
 
   def biggest_sequence
     (1..@max_number).each do |number|
-      size = fetch_sequence_size(number)
+      size = CollatzSizeCalculator.new(number).sequence_size
       update_biggest_sequence(number, size) if size > @biggest_sequence_size
     end
-    print_message
+    ResultPrinter.new(@biggest_sequence_number, @biggest_sequence_size).print
   end
 
   private
-
-  def fetch_sequence_size(number)
-    @sequnce_size_cache[number] ||= CollatzSizeCalculator.new(number).sequence_size
-  end
 
   def update_biggest_sequence(number, size)
     @biggest_sequence_number = number
     @biggest_sequence_size = size
   end
-
-  def print_message
-    "O inteiro com maior sequência é o #{@biggest_sequence_number} " \
-      "com sequência contendo #{@biggest_sequence_size} elementos"
-  end
 end
 
-# CollatzSizeCalculator.new(13).sequence_size
-CollatzSizeComparator.new(100_000).biggest_sequence
+if __FILE__ == $0
+  puts CollatzSizeComparator.new(1_000_000).biggest_sequence
+end
